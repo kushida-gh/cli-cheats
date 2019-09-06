@@ -1,0 +1,19 @@
+# Cisco FMC 6.3 Certificate Install via CLI (if the web UI-based certificate import isn't working)
+#
+# This assumes the CSR generation has already been done within the FMC web UI.
+#
+# SSH into console, then:
+
+cd /etc/ssl
+sudo mkdir backup
+
+# Backup original versions of server.crt and ca-cert.pem:
+
+cp server.crt ca-cert.pem backup/
+
+# Note: server.key file seems to be re-used whenever the CSR generation is done via the web UI. Lame.
+
+# Replace server.crt so it contains the server certificate, as well as the issuing CA and the root CA certs all in a row (in that order).
+# Then restart the web UI process
+
+pmtool restartbyid httpsd
