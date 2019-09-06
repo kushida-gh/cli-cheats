@@ -1,0 +1,36 @@
+# VMware ESXi 6.7 Certificate Install (non-Self-Signed)
+#
+# Generate 2048-bit RSA key, create CSR, install certificate issued by a signing authority.
+# Because self-signed certs are stupid. Especially those who blindly accept them.
+#
+# SSH into the host, then:
+
+cd /etc/vmware/ssl
+
+mkdir backup
+cp rui.crt rui.key backup/
+
+# You'll be asked for a passphrase, which we'll strip out later.
+
+openssl genrsa -aes256 -out ruinew.key 2048
+
+# Create a CSR:
+
+openssl req -new -sha256 -key ruinew.key -out ruinew.csr -subj "/C=US/ST=California/L=San Francisco/O=My Company Name/OU=IT Department/CN=vserver01.corp.mycompanyname.com"
+
+# Note: if any string in the DN contains commas or other special characters, create a temporary OpenSSL config file with the "req" and "req_distinguished_name" sections.
+# This will be necessary if, for example, the company name is "My Company, Inc." or similar with a comma in the string.
+
+openssl req -new -sha256 -key ruinew.key -out ruinew.csr -config temp.conf
+
+# Copy issued cert to this dir and save as rui.crt, overwriting self-signed cert.
+# Include intermediate CA cert after the server cert in rui.crt
+
+# Remove passphrase from private key
+
+openssl rsa -in ruinew.key -out rui.key
+
+# Restart management agents:
+
+/etc/init.d/hostd restart
+/etc/init.d/vpxa restart
