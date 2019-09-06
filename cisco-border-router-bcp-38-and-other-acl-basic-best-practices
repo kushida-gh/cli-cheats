@@ -1,0 +1,128 @@
+Cisco IOS Border Router Example ACL
+
+Assumes 2 interfaces (one provider-facing, other towards corporate firewall) connecting only to non-RFC1918 networks and the router does not NAT. In this example, the x.x.x.x refers to the public IPv4 network space assigned to the organization.
+
+
+
+Objectives:
+
+Reduce firewall log noise and constant Internet radiation (random scanning, backscatter, etc.) from making it past the router.
+
+NEVER use the "any" keyword without understanding the consequences! "Any" DOES NOT EQUAL "the Internet!" It means ANY IPv4 address, private or public!
+
+Always use the "established" keyword when accounting for TCP return traffic to reduce SYN-only scan noise on firewall logs.
+
+Assume router in this case is configured to perform NTP with a host behind the firewall.
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+# Apply to provider-facing interface
+
+ip access-list extended outside-in
+
+ remark --- BGP Peering 
+ permit tcp [provider peer router] gt 1023 [router external address] eq 179
+ permit tcp [router external address] eq 179 [provider peer router] gt 1023 established
+ permit icmp [provider peer router] [router external address] echo
+ permit icmp [router external address] echo-reply [provider peer router] 
+
+ remark --- BCP 38
+ deny ip 0.0.0.0 0.255.255.255 any
+ deny ip 10.0.0.0 0.255.255.255 any
+ deny ip 127.0.0.0 0.255.255.255 any
+ deny ip 169.254.0.0 0.0.255.255 any
+ deny ip 172.16.0.0 0.15.255.255 any
+ deny ip 192.0.2.0 0.0.0.255 any
+ deny ip 192.168.0.0 0.0.255.255 any
+ deny ip 224.0.0.0 31.255.255.255 any
+ deny ip any 0.0.0.0 0.255.255.255
+ deny ip any 10.0.0.0 0.255.255.255
+ deny ip any 127.0.0.0 0.255.255.255
+ deny ip any 169.254.0.0 0.0.255.255
+ deny ip any 172.16.0.0 0.15.255.255
+ deny ip any 192.0.2.0 0.0.0.255
+ deny ip any 192.168.0.0 0.0.255.255
+ deny ip any 224.0.0.0 31.255.255.255
+
+ remark ---- Deny spoofed traffic with assigned public IPs behind router
+ deny ip x.x.x.x [inverse mask] any
+
+ remark ---- Deny traffic to any public loopback address
+ deny ip any [public loopback address]
+
+ remark ---- Hosted services for customers on the Internet
+ permit tcp any gt 1023 host x.x.x.21 eq 443
+ permit tcp any gt 1023 host x.x.x.21 eq 80
+ permit tcp any gt 1023 host x.x.x.22 eq 53
+ permit udp any gt 1023 host x.x.x.22 eq 53
+ permit tcp any gt 1023 host x.x.x.23 eq 25
+
+ remark ---- Expected return traffic to user network NAT .101
+ permit tcp any eq 443 host x.x.x.101 gt 1023 established
+ permit tcp any eq 80 host x.x.x.101 gt 1023 established
+ permit tcp any eq 53 host x.x.x.101 gt 1023 established
+ permit udp any eq 53 host x.x.x.101 gt 1023
+ permit udp any eq 123 host x.x.x.101 eq 123
+ permit udp any eq 123 host x.x.x.101 gt 1023
+ permit icmp any host x.x.x.101 echo-reply
+ permit icmp any host x.x.x.101 unreachable
+ permit icmp any host x.x.x.101 ttl-exceeded
+
+ # A final cleanup rule at the end of an ACL applied on a public-facing interface means logging all Internet noise that gets dropped and increases the potential of DoS - use only if you're willing to accept the risk
+
+ remark --- Clean-up log rule
+ deny ip any any log-input
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+# Apply to corporate firewall-facing interface
+
+ip access-list extended inside-in
+
+ remark ---- HSRPv2
+ permit udp [peer router HSRP address] eq 1985 host 224.0.0.102 eq 1985
+
+ # Drops un-NATed or RFC1918-mis-routed traffic accidentally leaked out
+
+ remark --- BCP 38
+ deny ip 0.0.0.0 0.255.255.255 any
+ deny ip 10.0.0.0 0.255.255.255 any
+ deny ip 127.0.0.0 0.255.255.255 any
+ deny ip 169.254.0.0 0.0.255.255 any
+ deny ip 172.16.0.0 0.15.255.255 any
+ deny ip 192.0.2.0 0.0.0.255 any
+ deny ip 192.168.0.0 0.0.255.255 any
+ deny ip 224.0.0.0 31.255.255.255 any
+ deny ip any 0.0.0.0 0.255.255.255
+ deny ip any 10.0.0.0 0.255.255.255
+ deny ip any 127.0.0.0 0.255.255.255
+ deny ip any 169.254.0.0 0.0.255.255
+ deny ip any 172.16.0.0 0.15.255.255
+ deny ip any 192.0.2.0 0.0.0.255
+ deny ip any 192.168.0.0 0.0.255.255
+ deny ip any 224.0.0.0 31.255.255.255
+
+ remark --- Prevent user network NAT .101 to border router
+ deny ip host x.x.x.101 [router inside address]
+ deny ip host x.x.x.101 [router outside address]
+ deny ip host x.x.x.101 [public loopback address]
+
+ remark --- User network NAT .101 to Internet
+ permit tcp host x.x.x.101 gt 1023 any eq 443
+ permit tcp host x.x.x.101 gt 1023 any eq 80
+ permit tcp host x.x.x.101 gt 1023 any eq 53
+ permit udp host x.x.x.101 gt 1023 any eq 53
+ permit udp host x.x.x.101 eq 123 any eq 123
+ permit udp host x.x.x.101 gt 1023 any eq 123
+ permit icmp host x.x.x.101 any echo
+
+ remark --- NTP sync
+ permit udp host x.x.x.31 eq 123 [router inside interface or loopback address] eq 123
+
+ remark --- Clean-up log rule
+ deny ip any any log-input
+
+
