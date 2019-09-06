@@ -1,0 +1,411 @@
+# PKI setup (2-tier)
+#
+# root CA host: ca-root.corp.example.com, CN=Corporate Root Certification Authority A1
+# intermediary (issuing) CA host: ca-issuer01.corp.example.com, CN=Corporate Issuing Certification Authority A1
+#
+# Create root (to be offlined once second-tier intermediary (issuing) CA is created and assigned a certificate from the root)
+
+mkdir -p /root/ca /root/ca/certs /root/ca/crl /root/ca/newcerts /root/ca/private
+chmod 700 /root/ca/private
+touch /root/ca/index.txt
+echo 1000 > /root/ca/serial
+
+
+vi /root/ca/openssl.cnf
+
+[ ca ]
+# `man ca`
+default_ca = CA_default
+
+[ CA_default ]
+# Directory and file locations.
+dir               = /root/ca
+certs             = $dir/certs
+crl_dir           = $dir/crl
+new_certs_dir     = $dir/newcerts
+database          = $dir/index.txt
+serial            = $dir/serial
+RANDFILE          = $dir/private/.rand
+private_key       = $dir/private/ca-root.key
+certificate       = $dir/certs/ca-root.crt
+crlnumber         = $dir/crlnumber
+crl               = $dir/crl/ca.crl
+crl_extensions    = crl_ext
+default_crl_days  = 30
+default_md        = sha256
+name_opt          = ca_default
+cert_opt          = ca_default
+default_days      = 375
+preserve          = no
+policy            = policy_strict
+
+[ policy_strict ]
+# The root CA should only sign intermediate certificates that match.
+# See the POLICY FORMAT section of `man ca`.
+countryName             = match
+stateOrProvinceName     = match
+organizationName        = match
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ policy_loose ]
+# Allow the intermediate CA to sign a more diverse range of certificates.
+# See the POLICY FORMAT section of the `ca` man page.
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ req ]
+# Options for the `req` tool (`man req`).
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+string_mask         = utf8only
+# SHA-1 is deprecated, so use SHA-2 instead.
+default_md          = sha256
+# Extension to add when the -x509 option is used.
+x509_extensions     = v3_ca
+
+[ req_distinguished_name ]
+# See <https://en.wikipedia.org/wiki/Certificate_signing_request>.
+countryName                     = Country Name (2 letter code)
+stateOrProvinceName             = State or Province Name
+localityName                    = Locality Name
+0.organizationName              = Organization Name
+organizationalUnitName          = Organizational Unit Name
+commonName                      = Common Name
+emailAddress                    = Email Address
+# Optionally, specify some defaults.
+countryName_default             = US
+stateOrProvinceName_default     = California
+localityName_default            = San Francisco
+0.organizationName_default      = Example Corp, Inc.
+organizationalUnitName_default  = Information Technology
+emailAddress_default            = domain-admin@corp.example.com
+
+[ v3_ca ]
+# Extensions for a typical CA (`man x509v3_config`).
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+
+[ v3_intermediate_ca ]
+# Extensions for a typical intermediate CA (`man x509v3_config`).
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true, pathlen:0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+authorityInfoAccess = OCSP;URI:http://ca-ocsp.corp.example.com
+
+[ usr_cert ]
+# Extensions for client certificates (`man x509v3_config`).
+basicConstraints = CA:FALSE
+nsCertType = client, email
+nsComment = "OpenSSL Generated Client Certificate"
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth, emailProtection
+authorityInfoAccess = OCSP;URI:http://ca-ocsp.corp.example.com
+
+[ server_cert ]
+# Extensions for server certificates (`man x509v3_config`).
+basicConstraints = CA:FALSE
+nsCertType = server
+nsComment = "OpenSSL Generated Server Certificate"
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer:always
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+authorityInfoAccess = OCSP;URI:http://ca-ocsp.corp.example.com
+
+[ crl_ext ]
+# Extension for CRLs (`man x509v3_config`).
+authorityKeyIdentifier=keyid:always
+
+[ ocsp ]
+# Extension for OCSP signing certificates (`man ocsp`).
+basicConstraints = CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage = critical, digitalSignature
+extendedKeyUsage = critical, OCSPSigning
+
+[ v3_OCSP ]
+basicConstraints = CA:FALSE
+keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = OCSPSigning
+
+
+
+
+# Use a STRONG passphrase!!!! Use a password manager for this!
+openssl genrsa -aes256 -out /root/ca/private/ca-root.key 4096
+chmod 400 /root/ca/private/ca-root.key
+openssl req -config /root/ca/openssl.cnf -key /root/ca/private/ca-root.key -new -x509 -days 7300 -sha256 -extensions v3_ca -out /root/ca/certs/ca-root.crt
+chmod 444 /root/ca/certs/ca-root.crt
+openssl x509 -noout -text -in /root/ca/certs/ca-root.crt
+
+# Back-up root CA config and keys
+tar czvf /root/root-ca-backup.tgz /root/ca
+gpg --output /root/root-ca-backup.tgz.gpg --symmetric /root/root-ca-backup.tgz
+rm -f /root/root-ca-backup.tgz
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Create second-tier, intermediary issuing CA (on a completely different server).
+
+mkdir -p /root/ca/intermediate /root/ca/intermediate/certs /root/ca/intermediate/crl /root/ca/intermediate/csr /root/ca/intermediate/newcerts /root/ca/intermediate/private
+chmod 700 /root/ca/intermediate/private
+touch /root/ca/intermediate/index.txt
+echo 1000 > /root/ca/intermediate/serial
+echo 1000 > /root/ca/intermediate/crlnumber
+
+
+
+
+vi /root/ca/intermediate/openssl.cnf
+
+[ ca ]
+# `man ca`
+default_ca = CA_default
+
+[ CA_default ]
+dir               = /root/ca/intermediate
+certs             = $dir/certs
+crl_dir           = $dir/crl
+new_certs_dir     = $dir/newcerts
+database          = $dir/index.txt
+serial            = $dir/serial
+RANDFILE          = $dir/private/.rand
+private_key       = $dir/private/ca-intermediate.key
+certificate       = $dir/certs/ca-intermediate.crt
+crlnumber         = $dir/crlnumber
+crl               = $dir/crl/ca-intermediate.crl
+crl_extensions    = crl_ext
+default_crl_days  = 30
+default_md        = sha256
+name_opt          = ca_default
+cert_opt          = ca_default
+default_days      = 375
+preserve          = no
+policy            = policy_loose
+
+[ policy_strict ]
+# The root CA should only sign intermediate certificates that match.
+# See the POLICY FORMAT section of `man ca`.
+countryName             = match
+stateOrProvinceName     = match
+organizationName        = match
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ policy_loose ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ req ]
+# Options for the `req` tool (`man req`).
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+string_mask         = utf8only
+default_md          = sha256
+x509_extensions     = v3_ca
+
+[ req_distinguished_name ]
+# See <https://en.wikipedia.org/wiki/Certificate_signing_request>.
+countryName                     = Country Name (2 letter code)
+stateOrProvinceName             = State or Province Name
+localityName                    = Locality Name
+0.organizationName              = Organization Name
+organizationalUnitName          = Organizational Unit Name
+commonName                      = Common Name
+emailAddress                    = Email Address
+
+# Optionally, specify some defaults.
+countryName_default             = US
+stateOrProvinceName_default     = California
+localityName_default            = San Francisco
+0.organizationName_default      = Example Corp, Inc.
+organizationalUnitName_default  = Information Technology
+emailAddress_default            = domain-admin@corp.example.com
+
+[ v3_ca ]
+# Extensions for a typical CA (`man x509v3_config`).
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+subjectAltName = @alt_names
+
+[ v3_intermediate_ca ]
+# Extensions for a typical intermediate CA (`man x509v3_config`).
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical, CA:true, pathlen:0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+authorityInfoAccess = OCSP;URI:http://ca-ocsp.corp.example.com
+
+[ usr_cert ]
+# Extensions for client certificates (`man x509v3_config`).
+basicConstraints = CA:FALSE
+nsCertType = client, email
+nsComment = "OpenSSL Generated Client Certificate"
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = clientAuth, emailProtection
+authorityInfoAccess = OCSP;URI:http://ca-ocsp.corp.example.com
+
+[ server_cert ]
+# Extensions for server certificates (`man x509v3_config`).
+basicConstraints = CA:FALSE
+nsCertType = server
+nsComment = "OpenSSL Generated Server Certificate"
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer:always
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+authorityInfoAccess = OCSP;URI:http://ca-ocsp.corp.example.com
+
+[ crl_ext ]
+# Extension for CRLs (`man x509v3_config`).
+authorityKeyIdentifier=keyid:always
+
+[ ocsp ]
+# Extension for OCSP signing certificates (`man ocsp`).
+basicConstraints = CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+keyUsage = critical, digitalSignature
+extendedKeyUsage = critical, OCSPSigning
+
+[ v3_OCSP ]
+basicConstraints = CA:FALSE
+keyUsage = critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage = OCSPSigning
+
+[ alt_names ]
+DNS = changethisone
+
+
+
+
+
+
+# Use a STRONG passphrase, different from root CA's!!!! Use a password manager for this!
+openssl genrsa -aes256 -out /root/ca/intermediate/private/ca-intermediate.key 4096
+
+chmod 400 /root/ca/intermediate/private/ca-intermediate.key
+
+openssl req -config /root/ca/intermediate/openssl.cnf -new -sha256 -key /root/ca/intermediate/private/ca-intermediate.key -out /root/ca/intermediate/csr/ca-intermediate.csr
+
+openssl req -noout -text -verify -in /root/ca/intermediate/csr/ca-intermediate.csr
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+# Root CA signs the certificate for the intemediary CA.
+# Copy the intermediary CA's CSR to the root CA's host under /root/ca)
+
+openssl ca -config /root/ca/openssl.cnf -extensions v3_intermediate_ca -days 3650 -notext -md sha256 -in /root/ca/ca-intermediate.csr -out /root/ca/ca-intermediate.crt
+
+# Verify cert:
+openssl x509 -noout -text -in /root/ca/ca-intermediate.crt
+
+# Verify trust chain:
+openssl verify -CAfile /root/ca/certs/ca-root.crt /root/ca/ca-intermediate.crt
+
+# Copy newly-issued intermediary CA cert to the host running as the intermediary CA under /root/ca/intermediate/certs (filename: ca-intermediate.crt).
+
+
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Intermediary CA signs server CSRs, issues leaf-node certificates
+
+
+# If necessary, create a script to generate key pair and cert for nodes which can't self-generate CSRs ... which is stupid.
+
+mkdir -p /root/scripts
+vi /root/scripts/cert-generate-keypair-csr
+
+#!/bin/bash
+
+# Prompt for Common Name to be used as part of key filename
+echo 'Enter the Common Name to be used for the certificate:'
+read commonname
+
+# Generate 2048-bit RSA key pair
+openssl genrsa -out $commonname-$(date +%Y%m%d).key 2048
+
+# Create Certificate Signing Request
+openssl req -new -key $commonname-$(date +%Y%m%d.key -out $commonname-$(date +%Y%m%d).csr -subj "/C=US/ST=California/L=San Francisco/O=Example Corp, Inc./OU=Information Tecnhnology/CN=$commonname"
+
+# Verify Certificate Signing Request
+echo
+echo
+echo Verifying CSR ---------------------------------------------------------------------------------------------------------
+echo
+openssl req -noout -text -in $commonname-$(date +%Y%m%d)*.csr
+echo
+echo Verifying CSR ---------------------------------------------------------------------------------------------------------
+echo
+
+
+
+
+vi /root/scripts/cert-issue
+
+#!/bin/bash
+
+# Prompt for name of CSR file
+echo 'Enter the CSR filename:'
+read filename
+
+# Prompt for Common Name to be used as part of certificate filename
+echo 'Enter the Common Name to be used for the certificate:'
+read commonname
+
+cp /root/ca/intermediate/openssl.cnf /root/ca/intermediate/openssl-tmp.cnf
+sed -i "s/changethisone/$commonname/" /root/ca/intermediate/openssl-tmp.cnf
+
+# Issue certificate
+openssl ca -config /root/ca/intermediate/openssl-tmp.cnf -extensions server_cert -days 810 -notext -md sha256 -in /root/scripts/$filename -out /root/scripts/$commonname-$(date +%Y%m%d).crt
+chmod 444 /root/scripts/$commonname-$(date +%Y%m%d).crt
+
+# Verify certificate
+echo
+echo Verifying Certificate ---------------------------------------------------------------------------------------------------------
+echo
+openssl x509 -noout -text -in /root/scripts/$commonname-$(date +%Y%m%d).crt
+echo
+echo Verifying Certificate ---------------------------------------------------------------------------------------------------------
+echo
+
+rm -f /root/ca/intermediate/openssl-tmp.cnf
+mv /root/scripts/$commonname-$(date +%Y%m%d).crt /root/ca/intermediate/certs
+
+
+
+chmod 700 /root/scripts/*
+
+# Offline the root CA, ensure serious key management procedure is in place for the root CA's private key,
+# passphrase storage, etc..
