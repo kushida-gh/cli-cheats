@@ -1,0 +1,334 @@
+#!/bin/bash
+#
+# General-purpose CentOS 7 security audit script
+# This script needs to be ran via sudo or as root!
+
+echo ''
+
+# Check if IPv6 is enabled (should not be)
+ipv6disabledall=$(sysctl net.ipv6.conf.all.disable_ipv6 | awk '{print $3}')
+ipv6disableddefault=$(sysctl net.ipv6.conf.default.disable_ipv6 | awk '{print $3}')
+echo '   Audit for IPv6 usage'
+echo '   ----------------------------------------------------------------------'
+
+if [ "$ipv6disabledall" = "0" ] || [ $ipv6disableddefault = "0" ]; then
+   echo '   IPv6 is enabled on the system!'
+   echo ''
+   echo '   IPv6 addresses in use:'
+   echo ''
+   ifconfig | grep inet6 | cut -c 6-
+   echo ''
+   echo '   Correct temporarily with (no reboot required):'
+   echo ''
+   echo '      sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1'
+   echo '      sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1'
+   echo ''
+   echo '   and/or make permanent (reboot required):'
+   echo ''
+   echo '      sudo sed -i 's/net.ipv6.conf.all.disable_ipv6 = 0/net.ipv6.conf.all.disable_ipv6 = 1/g' /etc/sysctl.conf'
+   echo '      sudo sed -i 's/net.ipv6.conf.default.disable_ipv6 = 0/net.ipv6.conf.default.disable_ipv6 = 1/g' /etc/sysctl.conf'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check if both ntpd and chronyd are both installed and which is running
+   echo '   Audit for dual install of ntpd and chronyd'
+   echo '   ----------------------------------------------------------------------'
+checkrpmntp=$(rpm -qa | grep '^ntp-' | cut -d '-' -f1)
+checkrpmchrony=$(rpm -qa | grep '^chrony-' | cut -d '-' -f1)
+if [ "$checkrpmntp" = "ntp" ] && [ "$checkrpmchrony" = "chrony" ]; then
+   echo '   Both ntpd and chronyd are installed - potential conflict!'
+   echo ''
+fi
+
+svcrunstatntpd=$(systemctl is-active --quiet ntpd && echo 'yes')
+svcrunstatchronyd=$(systemctl is-active --quiet chronyd && echo 'yes')
+if [ "$svcrunstatntpd" = "yes" ]; then
+   echo '   ntpd is the active NTP daemon'
+   echo ''
+fi
+if [ "$svcrunstatchronyd" = "yes" ]; then
+   echo '   chronyd is the active NTP daemon'
+   echo ''
+fi
+if [ "$svcrunstatntpd" != "yes" ] && [ "$svcrunstatchronyd" != "yes" ]; then
+   echo '   Neither ntpd or chronyd are running!'
+   echo ''
+fi
+
+
+
+# Check if ntpd is running
+checkrpmntp=$(rpm -qa | grep '^ntp-' | cut -d '-' -f1)
+if [ "$checkrpmntp" = "ntp" ]; then
+   svcrunstatntpd=$(systemctl is-active --quiet ntpd && echo 'yes')
+   echo '   Audit if ntpd is running'
+   echo '   ----------------------------------------------------------------------'
+   if [ "$svcrunstatntpd" = "yes" ]; then
+      # Check whether currently synced
+      ntpsyncstat=$(ntpstat | grep sync | awk '{print $1}')
+      if [ "$ntpsyncstat" = "unsynchronised" ]; then
+         echo '   ntpd is currently unsynchronised'
+         echo ''
+      else
+         ntpdstratum=$(ntpstat | grep sync | awk '{print $8}')
+         ntpdreference=$(ntpstat | grep sync | awk '{print $5}' | cut -d '(' -f 2 | cut -d ')' -f1)
+      echo '   Current NTP stratum:' $ntpdstratum
+      echo '   Upstream NTP host:' $ntpdreference
+      echo ''
+      fi
+   else
+      echo '   ntpd is not running - correct with:'
+      echo ''
+      echo '      sudo systemctl enable ntpd'
+      echo '      sudo systemctl start ntpd'
+      echo ''
+   fi
+fi
+echo ''
+echo ''
+
+
+
+# Check if chronyd is running
+checkrpmchrony=$(rpm -qa | grep '^chrony-' | cut -d '-' -f1)
+if [ "$checkrpmchrony" = "chrony" ]; then
+   svcrunstatchronyd=$(systemctl is-active --quiet chronyd && echo 'yes')
+   echo '   Audit if chronyd is running'
+   echo '   ----------------------------------------------------------------------'
+   if [ "$svcrunstatchronyd" = "yes" ]; then
+      # Get current stratum reference, this requires sudo privileges or root
+      chronydstratum=$(chronyc -n tracking | grep '^Stratum' | awk '{print $3}')
+         if [ "$chronydstratum" = "0" ]; then
+            echo '   chronyd is currently unsynchronised'
+            echo ''
+         fi
+      chronydreference=$(chronyc -n tracking | grep '^Reference ID' | cut -d '(' -f2 | cut -d ')' -f1)
+      echo '   Current NTP stratum:' $chronydstratum
+      echo '   Upstream NTP host:' $chronydreference
+      echo ''
+   else
+      echo '   chronyd is not running - correct with:'
+      echo ''
+      echo '      sudo systemctl enable chronyd'
+      echo '      sudo systemctl start chronyd'
+      echo ''
+   fi
+fi
+echo ''
+echo ''
+
+
+
+# Check timezone (should be UTC)
+timezone=$(date | awk '{print $5}')
+echo '   Audit for system timezone set to UTC'
+echo '   ----------------------------------------------------------------------'
+if [ "$timezone" = "UTC" ]; then
+   echo '   Timezone is set to' $timezone
+   echo ''
+else
+   echo '   Timezone is not set to UTC - correct with:'
+   echo ''
+   echo '      ln -s /usr/share/zoneinfo/UTC /etc/localtime'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check if rsyslog is running (should not be)
+svcrunstatrsyslog=$(systemctl is-active --quiet rsyslog.service && echo 'yes')
+svcrunstatsyslogng=$(systemctl is-active --quiet syslog-ng.service && echo 'yes')
+echo '   Audit if rsyslog is running instead of syslog-ng'
+echo '   ----------------------------------------------------------------------'
+if [ "$svcrunstatrsyslog" = "yes" ]; then
+   echo '   rsyslog is running - only syslog-ng should be in use; correct with:'
+   echo ''
+   echo '      sudo systemctl stop rsyslog.service'
+   echo '      sudo systemctl disable rsyslog.service'
+   echo '      sudo systemctl mask --now rsyslog.service'
+   echo ''
+   echo '      sudo yum -y install epel-release'
+   echo '      sudo yum -y install syslog-ng'
+   echo '      sudo systemctl start syslog-ng.service'
+   echo '      sudo systemctl enable syslog-ng.service'
+   echo ''
+fi
+
+if [ "$svcrunstatsyslogng" = "yes" ]; then
+   echo '   syslog-ng is running.'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check if Avahi is running (should not be)
+svcrunstatavahi=$(systemctl is-active --quiet avahi-daemon.service && echo 'yes')
+echo '   Audit if avahi-daemon is running'
+echo '   ----------------------------------------------------------------------'
+if [ "$svcrunstatavahi" = "yes" ]; then
+   echo '   avahi-daemon is running - correct with:'
+   echo ''
+   echo '      sudo systemctl stop avahi-daemon.service'
+   echo '      sudo systemctl disable avahi-daemon.service'
+   echo '      sudo systemctl mask --now avahi-daemon.service'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check if NetworkManager is running (should not be)
+svcrunstatnetworkmanager=$(systemctl is-active --quiet NetworkManager.service && echo 'yes')
+echo '   Audit if NetworkManager is running'
+echo '   ----------------------------------------------------------------------'
+if [ "$svcrunstatnetworkmanager" = "yes" ]; then
+   echo '   NetworkManager is running - correct with:'
+   echo ''
+   echo '      sudo systemctl stop NetworkManager.service'
+   echo '      sudo systemctl disable NetworkManager.service'
+   echo '      sudo systemctl mask --now NetworkManager.service'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check if remote root SSH access is enabled
+sshdconfpermitrootlogin=$(cat /etc/ssh/sshd_config | grep '^PermitRootLogin' | awk '{print $2}')
+echo '   Audit if sshd PermitRootLogin is set to "yes"'
+echo '   ----------------------------------------------------------------------'
+if [ "$sshdconfpermitrootlogin" = "yes" ]; then
+   echo '   sshd PermitRootLogin is allowed - correct by setting this directive to "no" and:'
+   echo ''
+   echo '      sudo systemctl restart sshd.service'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check iptables INPUT chain policy
+firewalldactive=$(systemctl is-active --quiet firewalld.service && echo 'yes')
+iptablesactive=$(systemctl is-active --quiet iptables.service && echo 'yes')
+echo '   Audit if iptables INPUT chain is set to drop'
+echo '   ----------------------------------------------------------------------'
+if [ "$firewalldactive" = "yes" ]; then
+   echo '   firewalld is running - correct by replacing with iptables:'
+   echo ''
+   echo '      sudo systemctl stop firewalld.service'
+   echo '      sudo systemctl disable firewalld.service'
+   echo '      sudo systemctl mask --now firewalld.service'
+   echo ''
+   echo '      sudo yum -y install iptables-services'
+   echo '      sudo systemctl start iptables.service'
+   echo '      sudo systemctl enable iptables.service'
+   echo ''
+fi
+
+if [ "$iptablesactive" = "yes" ]; then
+   iptablesinputchainpolicy=$(iptables -L INPUT | grep 'Chain INPUT' | awk '{print $4}' | cut -d ')' -f1)
+   echo '   iptables INPUT chain is set to:' $iptablesinputchainpolicy
+   echo ''
+else
+   echo '   iptables is not running'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check for Netcat or Nmap install (based on standard RPM lookup, does not include standalone versions)
+echo '   Audit if Netcat or Nmap is installed via RPM'
+echo '   ----------------------------------------------------------------------'
+checkforrpmnetcat=$(rpm -qa | grep '^nc-' | cut -d '-' -f 1)
+if [ "$checkforrpmnetcat" = "nc" ]; then
+   echo '   Netcat seems to be installed!'
+else
+   echo '   Netcat does not seemed to be installed via RPM.'
+fi
+
+checkforrpmnmap=$(rpm -qa | grep '^nmap' | cut -d '-' -f 1)
+if [ "$checkforrpmnmap" = "nmap" ]; then
+   echo '   Nmap seems to be installed!'
+   echo ''
+else
+   echo '   Nmap does not seemed to be installed via RPM.'
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# Check disk space usage above 60% on each volume
+echo '   Audit if disk utilization is greater than 60%'
+echo '   ----------------------------------------------------------------------'
+df -h --output='pcent' | grep -v 'Use%' | awk '{print $1}' | cut -d '%' -f1 >> tmp-disk-usage
+
+cat tmp-disk-usage | while read entry
+   do
+      if [ $entry -gt 60 ]; then
+         echo $entry >> tmp-disk-usage-final;
+      fi
+   done
+
+existfilefinal=tmp-disk-usage-final
+if
+   [ -f "$existfilefinal" ]; then
+      for i in $(cat tmp-disk-usage-final)
+         do
+            df -h --output='pcent,target' | grep $i
+      done
+fi
+
+existfile=tmp-disk-usage
+if
+   [ -f "$existfile" ]; then
+      rm -f tmp-disk-usage*
+fi
+
+existfilefinal=tmp-disk-usage-final
+if
+   [ -f "$existfilefinal" ]; then
+      rm -f tmp-disk-usage-final
+else
+   echo ''
+fi
+echo ''
+echo ''
+
+
+
+# List all enabled and running services
+echo '   Audit for enabled and running services'
+echo '   ----------------------------------------------------------------------'
+echo ''
+echo '   Currently-enabled services:'
+echo ''
+systemctl list-unit-files --type service | grep enabled | awk '{print $1}' | sed s/^/'   '/g
+echo ''
+echo '   Currently-running services:'
+echo ''
+systemctl list-units --type service | grep running | awk '{print $1}' | sed s/^/'   '/g
+echo ''
+
+
+
+# List all local accounts with shell access
+echo '   Audit for local accounts with shell access'
+echo '   ----------------------------------------------------------------------'
+echo ''
+grep '/bin/bash$' /etc/passwd | cut -d ':' -f1 | sed s/^/'   '/g
+echo ''
