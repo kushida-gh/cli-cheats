@@ -13,7 +13,7 @@ Rename-Computer -NewName [new name] -LocalCredential env:computername\Administra
 # -----------------------------------------------------------
 New-NetIPAddress –InterfaceAlias "Wired Ethernet Connection" –IPv4Address $net-ip-static –PrefixLength 24 -DefaultGateway $net-ip-gateway
 Set-DnsClientServerAddress -InterfaceAlias "Wired Ethernet Connection" -ServerAddresses 172.31.0.51
-Set-DnsClientGlobalSetting -SuffixSearchList @("fhlbsf-lab.com")
+Set-DnsClientGlobalSetting -SuffixSearchList @("foobar.com")
 
 
 # Disable NetBIOS over TCP/IP
@@ -85,6 +85,6 @@ Write-Host "Reboot the server when ready to initialize your new Active Directory
 # -----------------------------------------------------------
 Set-ItemProperty -Path ‘HKLM:SYSTEM\CurrentControlSetControl\Terminal Server’ -Name fDenyTSConnections -Value 0
 
-New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FHLBSF: Allow RDP" -Direction inbound -Profile Any -Action Allow -Protocol TCP -LocalPort 3389
-New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FHLBSF: Allow ping" -Direction inbound -Profile Any -Action Allow -Protocol ICMPv4 -IcmpType 8
+New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow RDP" -Direction inbound -Profile Any -Action Allow -Protocol TCP -LocalPort 3389
+New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow ping" -Direction inbound -Profile Any -Action Allow -Protocol ICMPv4 -IcmpType 8
 
