@@ -1,0 +1,90 @@
+
+$hostnamenew = Read-Host -Prompt 'Enter  new hostname: '
+$net-ip-static = Read-Host -Prompt 'Enter IP address: '
+$net-ip-gateway = Read-Host -Prompt 'Enter default gateway: '
+
+
+# Change hostname
+# -----------------------------------------------------------
+Rename-Computer -NewName [new name] -LocalCredential env:computername\Administrator -PassThru
+
+
+# Set static IP on interface alias "Wired Ethernet Connection"
+# -----------------------------------------------------------
+New-NetIPAddress –InterfaceAlias "Wired Ethernet Connection" –IPv4Address $net-ip-static –PrefixLength 24 -DefaultGateway $net-ip-gateway
+Set-DnsClientServerAddress -InterfaceAlias "Wired Ethernet Connection" -ServerAddresses 172.31.0.51
+Set-DnsClientGlobalSetting -SuffixSearchList @("fhlbsf-lab.com")
+
+
+# Disable NetBIOS over TCP/IP
+# -----------------------------------------------------------
+$net-adapters=(gwmi Win32_NetworkAdapterConfiguration )
+Foreach ($net-adapter in $net-adapters){
+  Write-Host $net-adapter
+  $net-adapter.SetTcpipNetbios(2)
+}
+
+
+
+# Disable QoS Packet Scheduler
+# -----------------------------------------------------------
+Disable-NetAdapterBinding -Name "*" -ComponentID ms_pacer
+
+# Disable File and Printer Sharing for Microsoft Networks
+# -----------------------------------------------------------
+Disable-NetAdapterBinding -Name "*" -ComponentID ms_server
+
+# Disable Internet Protocol Version (TCP/IPv6)
+# -----------------------------------------------------------
+Disable-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6
+
+# Disable Link-Layer Topology Discovery Mapper I/O Driver
+# -----------------------------------------------------------
+Disable-NetAdapterBinding -Name "*" -ComponentID ms_lltdio
+
+# Disable Link-Layer Topology Discovery Responder
+# -----------------------------------------------------------
+Disable-NetAdapterBinding -Name "*" -ComponentID ms_rspndr
+
+
+
+
+# Disable Teredo
+# -----------------------------------------------------------
+netsh interface teredo set state disabled
+
+
+# Disable SSDP
+# -----------------------------------------------------------
+Disable-NetLldpAgent -NetAdapterName "*"
+Stop-Service "SSDPSRV" -Force
+Set-Service "SSDPSRV" -StartupType Disabled
+
+
+
+
+
+
+# Create Active Directory
+# -----------------------------------------------------------
+$dns-fqdn = Read-Host -Prompt 'Enter Active Directory DNS namespace (such as foobar.com): '
+$netbios-domain = Read-Host -Prompt 'Enter Active Directory NetBIOS name (such as FOOBAR): '
+
+Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
+
+Import-Module ADDSDeployment
+
+Install-ADDSForest -DomainName $dns-fqdn -CreateDnsDelegation:$false -DatabasePath "C:\Windows\NTDS" -DomainMode "7" -DomainNetbiosName "$netbios-domain" -ForestMode "7" -InstallDns:$true -LogPath "C:\Windows\NTDS" -NoRebootOnCompletion:$True -SysvolPath "C:\Windows\SYSVOL" -Force:$true
+
+Write-Host "Reboot the server when ready to initialize your new Active Directory installation."
+
+
+
+
+# Enable Remote Desktop
+# -----------------------------------------------------------
+Set-ItemProperty -Path ‘HKLM:SYSTEM\CurrentControlSetControl\Terminal Server’ -Name fDenyTSConnections -Value 0
+
+New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FHLBSF: Allow RDP" -Direction inbound -Profile Any -Action Allow -Protocol TCP -LocalPort 3389
+New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FHLBSF: Allow ping" -Direction inbound -Profile Any -Action Allow -Protocol ICMPv4 -IcmpType 8
+
