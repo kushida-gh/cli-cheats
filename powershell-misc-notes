@@ -154,6 +154,17 @@ Remove-AppxPackage Microsoft.MicrosoftEdge
 Remove-AppxPackage Microsoft.MicrosoftEdge_44.17763.1.0_neutral__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.Windows.Cortana_1.11.5.17763_neutral_neutral_cw5n1h2txyewy
 
+Get-AppxPackage *Microsoft.YourPhone* -AllUsers | Remove-AppxPackage
+
+
+# Remove OneDrive
+taskkill.exe /f /im OneDrive.exe
+C:\Windows\SysWOW64\OneDriveSetup.exe /uninstall
+
+
+
+# Remove Microsoft Edge desktop shortcut
+Remove-Item '$env:homepath\Desktop\\Microsoft Edge.lnk'
 
 
 
