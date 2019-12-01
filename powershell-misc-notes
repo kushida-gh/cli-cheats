@@ -74,13 +74,22 @@ reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Search" /v AllowCortan
 
 
 
-# Remove Xbox stuff (https://gist.github.com/joshschmelzle/04c57d957c5bb92e85ae9180021b26dc)
+# Remove gaming/Xbox stuff (https://gist.github.com/joshschmelzle/04c57d957c5bb92e85ae9180021b26dc)
 # -----------------------------------------------------------
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "xbox" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR" /v value /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\ApplicationManagement" /v AllowGameDVR /t REG_DWORD /d 0 /f
+reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\GameBar" /v AutoGameModeEnabled /t REG_DWORD /d 0 /f
+
+
 
 # Remove Zune stuff
 # -----------------------------------------------------------
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "zune" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+
+
 
 # Remove other crap
 # -----------------------------------------------------------
@@ -96,7 +105,6 @@ Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "messa
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "print3d" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "store" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "feedback" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-
 Remove-AppxPackage Microsoft.BingWeather
 Remove-AppxPackage Microsoft.Microsoft3DViewer
 Remove-AppxPackage Microsoft.MicrosoftSolitaireCollection
@@ -126,6 +134,14 @@ Remove-AppxPackage Microsoft.MicrosoftEdge_44.17763.1.0_neutral__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.Windows.Cortana_1.11.5.17763_neutral_neutral_cw5n1h2txyewy
 
 
+
+
+
+# Server-side stuff
+# -----------------------------------------------------------
+
+
+
 # Create Active Directory
 # -----------------------------------------------------------
 $dns-fqdn = Read-Host -Prompt 'Enter Active Directory DNS namespace (such as foobar.com): '
@@ -138,7 +154,6 @@ Import-Module ADDSDeployment
 Install-ADDSForest -DomainName $dns-fqdn -CreateDnsDelegation:$false -DatabasePath "C:\Windows\NTDS" -DomainMode "7" -DomainNetbiosName "$netbios-domain" -ForestMode "7" -InstallDns:$true -LogPath "C:\Windows\NTDS" -NoRebootOnCompletion:$True -SysvolPath "C:\Windows\SYSVOL" -Force:$true
 
 Write-Host "Reboot the server when ready to initialize your new Active Directory installation."
-
 
 
 
