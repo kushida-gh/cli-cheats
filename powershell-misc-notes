@@ -91,6 +91,11 @@ Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "walle
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "bingweather" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "solitaire" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "windowsmaps" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "onenote" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "mixedreality" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "messaging" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "print3d" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "store" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 
 
 # Create Active Directory
