@@ -25,29 +25,24 @@ Foreach ($net-adapter in $net-adapters){
 }
 
 
-
-# Disable QoS Packet Scheduler
+# Adapter Bindings
 # -----------------------------------------------------------
+# Disable QoS Packet Scheduler
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_pacer
 
 # Disable File and Printer Sharing for Microsoft Networks
-# -----------------------------------------------------------
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_server
 
 # Disable Internet Protocol Version (TCP/IPv6)
-# -----------------------------------------------------------
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_tcpip6
 
 # Disable Link-Layer Topology Discovery Mapper I/O Driver
-# -----------------------------------------------------------
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_lltdio
 
 # Disable Link-Layer Topology Discovery Responder
-# -----------------------------------------------------------
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_rspndr
 
 # Disable Microsoft LLDP Protocol Driver
-# -----------------------------------------------------------
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_lldp
 
 
@@ -57,23 +52,27 @@ Disable-NetAdapterBinding -Name "*" -ComponentID ms_lldp
 netsh interface teredo set state disabled
 
 
+
 # Disable SSDP
 # -----------------------------------------------------------
-
 # This doesn't seem to work on Windows 10
 # Disable-NetLldpAgent -NetAdapterName "*"
-
 Stop-Service "SSDPSRV" -Force
 Set-Service "SSDPSRV" -StartupType Disabled
+
 
 
 # Disable Remote Assistance
 # -----------------------------------------------------------
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Remote Assistance" /v fAllowToGetHelp /t REG_DWORD /d 0 /f
 
+
+
 # Disable Cortana
 # -----------------------------------------------------------
 reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Search" /v AllowCortana /t REG_DWORD /d 0 /f
+
+
 
 # Remove Xbox stuff (https://gist.github.com/joshschmelzle/04c57d957c5bb92e85ae9180021b26dc)
 # -----------------------------------------------------------
@@ -97,6 +96,34 @@ Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "messa
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "print3d" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "store" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "feedback" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+
+Remove-AppxPackage Microsoft.BingWeather
+Remove-AppxPackage Microsoft.Microsoft3DViewer
+Remove-AppxPackage Microsoft.MicrosoftSolitaireCollection
+Remove-AppxPackage Microsoft.MixedReality.Portal
+Remove-AppxPackage Microsoft.Office.OneNote
+Remove-AppxPackage Microsoft.OneConnect
+Remove-AppxPackage Microsoft.People
+Remove-AppxPackage Microsoft.Services.Store.Engagement
+Remove-AppxPackage Microsoft.Print3D
+Remove-AppxPackage Microsoft.Wallet
+Remove-AppxPackage Microsoft.WindowsFeedbackHub
+Remove-AppxPackage Microsoft.WindowsMaps
+Remove-AppxPackage Microsoft.Xbox.TCUI
+Remove-AppxPackage Microsoft.XboxApp
+Remove-AppxPackage Microsoft.XboxGameOverlay
+Remove-AppxPackage Microsoft.XboxSpeechToTextOverlay
+Remove-AppxPackage Microsoft.XboxGameCallableUI
+Remove-AppxPackage Microsoft.XboxIdentityProvider
+Remove-AppxPackage Microsoft.ZuneMusic
+Remove-AppxPackage Microsoft.ZuneVideo
+Remove-AppxPackage Microsoft.StorePurchaseApp
+Remove-AppxPackage Microsoft.WindowsStore
+Remove-AppxPackage Microsoft.Advertising
+Remove-AppxPackage Microsoft.WindowsCamera
+Remove-AppxPackage Microsoft.MicrosoftEdge
+Remove-AppxPackage Microsoft.MicrosoftEdge_44.17763.1.0_neutral__8wekyb3d8bbwe
+Remove-AppxPackage Microsoft.Windows.Cortana_1.11.5.17763_neutral_neutral_cw5n1h2txyewy
 
 
 # Create Active Directory
