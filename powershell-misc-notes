@@ -75,6 +75,22 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Control\Remote Assistance" /v fAllowToGet
 # -----------------------------------------------------------
 reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Search" /v AllowCortana /t REG_DWORD /d 0 /f
 
+# Remove Xbox stuff (https://gist.github.com/joshschmelzle/04c57d957c5bb92e85ae9180021b26dc)
+# -----------------------------------------------------------
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "xbox" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+
+# Remove Zune stuff
+# -----------------------------------------------------------
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "zune" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+
+# Remove other crap
+# -----------------------------------------------------------
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "oneconnect" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "people" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "wallet" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "bingweather" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "solitaire" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "windowsmaps" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 
 
 # Create Active Directory
