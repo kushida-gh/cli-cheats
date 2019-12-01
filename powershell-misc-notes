@@ -62,6 +62,27 @@ Set-Service "SSDPSRV" -StartupType Disabled
 
 
 
+# Disable Connected User Experiences and Telemetry service
+# -----------------------------------------------------------
+Stop-Service "DiagTrack" -Force
+Set-Service "DiagTrack" -StartupType Disabled
+
+
+
+# Disable Microsoft Account Sign-in Assistant service
+# -----------------------------------------------------------
+Stop-Service "wlidsvc" -Force
+Set-Service "wlidsvc" -StartupType Disabled
+
+
+
+# Disable Secure Socket Tunneling Protocol Service service
+# -----------------------------------------------------------
+Stop-Service "SstpSvc" -Force
+Set-Service "SstpSvc" -StartupType Disabled
+
+
+
 # Disable Remote Assistance
 # -----------------------------------------------------------
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\Remote Assistance" /v fAllowToGetHelp /t REG_DWORD /d 0 /f
