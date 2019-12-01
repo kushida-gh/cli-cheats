@@ -46,6 +46,9 @@ Disable-NetAdapterBinding -Name "*" -ComponentID ms_lltdio
 # -----------------------------------------------------------
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_rspndr
 
+# Disable Microsoft LLDP Protocol Driver
+# -----------------------------------------------------------
+Disable-NetAdapterBinding -Name "*" -ComponentID ms_lldp
 
 
 
