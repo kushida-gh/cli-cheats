@@ -59,7 +59,10 @@ netsh interface teredo set state disabled
 
 # Disable SSDP
 # -----------------------------------------------------------
-Disable-NetLldpAgent -NetAdapterName "*"
+
+# This doesn't seem to work on Windows 10
+# Disable-NetLldpAgent -NetAdapterName "*"
+
 Stop-Service "SSDPSRV" -Force
 Set-Service "SSDPSRV" -StartupType Disabled
 
