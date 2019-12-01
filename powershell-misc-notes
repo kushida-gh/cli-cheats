@@ -67,7 +67,13 @@ Stop-Service "SSDPSRV" -Force
 Set-Service "SSDPSRV" -StartupType Disabled
 
 
+# Disable Remote Assistance
+# -----------------------------------------------------------
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\Remote Assistance" /v fAllowToGetHelp /t REG_DWORD /d 0 /f
 
+# Disable Cortana
+# -----------------------------------------------------------
+reg add "HKLM\Software\Policies\Microsoft\Windows\Windows Search" /v AllowCortana /t REG_DWORD /d 0 /f
 
 
 
