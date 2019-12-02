@@ -1,3 +1,7 @@
+# If using in a script, you may need to run:
+# Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+
+
 
 $hostnamenew = Read-Host -Prompt 'Enter  new hostname: '
 $net-ip-static = Read-Host -Prompt 'Enter IP address: '
