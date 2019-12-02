@@ -167,6 +167,19 @@ C:\Windows\SysWOW64\OneDriveSetup.exe /uninstall
 
 
 
+# Remove PeopleExperienceHost
+Get-Process | Where-Object { $_.Name -match "PeopleExperienceHost.exe" } | Stop-Process -Force
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v PeopleBand /t REG_DWORD /d 0 /f
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People\ShoulderTap" /v ShoulderTap /t REG_DWORD /d 0 /f
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People\ShoulderTap" /v ShoulderTapAudio /t REG_DWORD /d 0 /f 
+
+
+
+# Remove Mail/Calendar
+Get-AppxPackage Microsoft.windowscommunicationsapps | Remove-AppxPackage
+
+
+
 # Remove Microsoft Edge desktop shortcut
 Remove-Item "$env:homepath\Desktop\\Microsoft Edge.lnk"
 
