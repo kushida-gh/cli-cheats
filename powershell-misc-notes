@@ -150,12 +150,14 @@ Remove-AppxPackage Microsoft.ZuneVideo_10.18052.20211.0_x64__8wekyb3d8bbwe
 
 
 # Remove OneDrive
+# -----------------------------------------------------------
 taskkill.exe /f /im OneDrive.exe
 C:\Windows\SysWOW64\OneDriveSetup.exe /uninstall
 
 
 
 # Remove PeopleExperienceHost
+# -----------------------------------------------------------
 Get-Process | Where-Object { $_.Name -match "PeopleExperienceHost.exe" } | Stop-Process -Force
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" /v PeopleBand /t REG_DWORD /d 0 /f
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People\ShoulderTap" /v ShoulderTap /t REG_DWORD /d 0 /f
@@ -164,17 +166,20 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
 
 
 # Remove Mail/Calendar
+# -----------------------------------------------------------
  Remove-AppxPackage microsoft.windowscommunicationsapps_17.9330.21365.0_x64__8wekyb3d8bbwe
 
 
 
 # Remove Microsoft Edge desktop shortcut
+# -----------------------------------------------------------
 Remove-Item "$env:homepath\Desktop\\Microsoft Edge.lnk"
 
 
 
 # https://docs.microsoft.com/en-us/windows/privacy/manage-windows-1809-endpoints
 # Ref: https://docs.microsoft.com/en-us/windows/privacy/manage-connections-from-windows-operating-system-components-to-microsoft-services#bkmk-priv-feedback
+# -----------------------------------------------------------
 
 # Feedback & diagnostics
 reg add "HKLM\Software\Policies\Microsoft\Windows\DataCollection" /v DoNotShowFeedbackNotifications /t REG_DWORD /d 1 /f
@@ -236,6 +241,57 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowCortan
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowSearchToUseLocation  /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v DisableWebSearch  /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v ConnectedSearchUseWeb  /t REG_DWORD /d 0 /f
+
+
+
+# Windows Settings
+# -----------------------------------------------------------
+# Privacy - General
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v Enabled /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Control Panel\International\User Profile" /v HttpAcceptLanguageOptOut /t REG_DWORD /d 1 /f
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_TrackProgs /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" SubscribedContent-338393Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" SubscribedContent-353694Enabled /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" SubscribedContent-353696Enabled /t REG_DWORD /d 0 /f
+
+# Privacy - Speech
+reg add "HKLM\SOFTWARE\Policies\Microsoft\InputPersonalization" /v AllowInputPersonalization /t REG_DWORD /d 0 /f
+
+# Privacy - Ink & Typing personalization
+reg add "HKCU\Software\Microsoft\Input\TIPC" /v Enabled /t REG_DWORD /d 0 /f
+
+# Privacy - Activity history
+reg add "HKLM\OFTWARE\Policies\Microsoft\Windows\System" /v PublishUserActivities /t REG_DWORD /d 0 /f
+
+# Privacy - Camera
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam" /v Value /t REG_SZ /d Deny
+
+# Privacy - Microphone
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone" /v Value /t REG_SZ /d Deny
+
+# Privacy - Contacts
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\contacts" /v Value /t REG_SZ /d Deny
+
+# Privacy - Calendar
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\appointments" /v Value /t REG_SZ /d Deny
+
+# Privacy - Call history
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\phoneCallHistory" /v Value /t REG_SZ /d Deny
+
+# Privacy - Email
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\email" /v Value /t REG_SZ /d Deny
+
+# Privacy - Messaging
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\chat" /v Value /t REG_SZ /d Deny
+
+# Privacy - Radios
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone
+
+# Search - Permissions and History
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowCloudSearch /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v PublishUserActivities /t REG_DWORD /d 0 /f
+
 
 
 
