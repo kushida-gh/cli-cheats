@@ -167,10 +167,11 @@ C:\Windows\SysWOW64\OneDriveSetup.exe /uninstall
 Remove-Item '$env:homepath\Desktop\\Microsoft Edge.lnk'
 
 
+
+# https://docs.microsoft.com/en-us/windows/privacy/manage-windows-1809-endpoints
 # Ref: https://docs.microsoft.com/en-us/windows/privacy/manage-connections-from-windows-operating-system-components-to-microsoft-services#bkmk-priv-feedback
 
 # Feedback & diagnostics
-
 reg add "HKLM\Software\Policies\Microsoft\Windows\DataCollection" /v DoNotShowFeedbackNotifications /t REG_DWORD /d 1 /f
 reg add "HKLM\Software\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\CloudContent" /v DisableWindowsConsumerFeatures /t REG_DWORD /d 1 /f
