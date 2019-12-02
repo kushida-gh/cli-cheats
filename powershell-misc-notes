@@ -120,43 +120,7 @@ Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "zune"
 
 # Remove other crap
 # -----------------------------------------------------------
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "oneconnect" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "people" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "wallet" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "bingweather" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "solitaire" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "windowsmaps" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "onenote" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "mixedreality" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "messaging" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "print3d" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "store" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "feedback" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.BingWeather" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Messaging" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Microsoft3DViewer" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.MicrosoftSolitaireCollection" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.MixedReality.Portal" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Office.OneNote" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.OneConnect" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.People" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Print3D" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.SkypeApp" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.StorePurchaseApp" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Wallet" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.WindowsCamera" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.WindowsFeedbackHub" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.WindowsMaps" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.WindowsStore" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.XboxApp" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.XboxGameOverlay" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.XboxIdentityProvider" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.XboxSpeechToTextOverlay" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Xbox.TCUI" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.ZuneMusic" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.ZuneVideo" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
-
+Remove-AppxPackage Microsoft.BingWeather_4.25.12127.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.Messaging_3.43.27001.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.Microsoft3DViewer_4.1808.15012.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.MicrosoftOfficeHub_17.8918.5926.0_x64__8wekyb3d8bbwe
@@ -179,20 +143,9 @@ Remove-AppxPackage Microsoft.XboxGamingOverlay_2.20.22001.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.XboxIdentityProvider_12.44.20001.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.XboxSpeechToTextOverlay_1.17.29001.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.Xbox.TCUI_1.11.28003.0_x64__8wekyb3d8bbwe
+Remove-AppxPackage Microsoft.YourPhone_0.0.12084.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.ZuneMusic_10.18052.20211.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.ZuneVideo_10.18052.20211.0_x64__8wekyb3d8bbwe
-
-
-Get-AppxPackage | Where-Object { $_.PackageName -match "BingWeather" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "Cortana" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "MicrosoftEdge" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "Advertising" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "WindowsStore" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "Xbox" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "Store.Engagement" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "CBS" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage | Where-Object { $_.PackageName -match "YourPhone" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
-Get-AppxPackage *Microsoft.YourPhone* -AllUsers | Remove-AppxPackage
 
 
 
@@ -211,7 +164,7 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People
 
 
 # Remove Mail/Calendar
-Get-AppxPackage Microsoft.windowscommunicationsapps | Remove-AppxPackage
+ Remove-AppxPackage microsoft.windowscommunicationsapps_17.9330.21365.0_x64__8wekyb3d8bbwe
 
 
 
