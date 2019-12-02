@@ -168,7 +168,7 @@ C:\Windows\SysWOW64\OneDriveSetup.exe /uninstall
 
 
 # Remove Microsoft Edge desktop shortcut
-Remove-Item '$env:homepath\Desktop\\Microsoft Edge.lnk'
+Remove-Item "$env:homepath\Desktop\\Microsoft Edge.lnk"
 
 
 
