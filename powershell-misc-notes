@@ -133,35 +133,6 @@ Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "print
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "store" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "feedback" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 
-Remove-AppxPackage Microsoft.Advertising
-Remove-AppxPackage Microsoft.BingWeather
-Remove-AppxPackage Microsoft.Messaging
-Remove-AppxPackage Microsoft.Microsoft3DViewer
-Remove-AppxPackage Microsoft.MicrosoftEdge
-Remove-AppxPackage Microsoft.MicrosoftEdge_44.17763.1.0_neutral__8wekyb3d8bbwe
-Remove-AppxPackage Microsoft.MicrosoftSolitaireCollection
-Remove-AppxPackage Microsoft.MixedReality.Portal
-Remove-AppxPackage Microsoft.Office.OneNote
-Remove-AppxPackage Microsoft.OneConnect
-Remove-AppxPackage Microsoft.People
-Remove-AppxPackage Microsoft.Print3D
-Remove-AppxPackage Microsoft.Services.Store.Engagement
-Remove-AppxPackage Microsoft.StorePurchaseApp
-Remove-AppxPackage Microsoft.Wallet
-Remove-AppxPackage Microsoft.WindowsCamera
-Remove-AppxPackage Microsoft.Windows.Cortana_1.11.5.17763_neutral_neutral_cw5n1h2txyewy
-Remove-AppxPackage Microsoft.WindowsFeedbackHub
-Remove-AppxPackage Microsoft.WindowsMaps
-Remove-AppxPackage Microsoft.WindowsStore
-Remove-AppxPackage Microsoft.XboxApp
-Remove-AppxPackage Microsoft.XboxGameCallableUI
-Remove-AppxPackage Microsoft.XboxGameOverlay
-Remove-AppxPackage Microsoft.XboxIdentityProvider
-Remove-AppxPackage Microsoft.XboxSpeechToTextOverlay
-Remove-AppxPackage Microsoft.Xbox.TCUI
-Remove-AppxPackage Microsoft.ZuneMusic
-Remove-AppxPackage Microsoft.ZuneVideo
-
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.BingWeather" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Messaging" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Microsoft3DViewer" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
@@ -171,6 +142,7 @@ Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Micro
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.OneConnect" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.People" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Print3D" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
+Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.SkypeApp" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.StorePurchaseApp" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.Wallet" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "Microsoft.WindowsCamera" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
@@ -209,6 +181,7 @@ Remove-AppxPackage Microsoft.Messaging_3.43.27001.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.MicrosoftOfficeHub_17.8918.5926.0_x64__8wekyb3d8bbwe
 Remove-AppxPackage Microsoft.SkypeApp_14.26.95.0_x64__kzf8qxf38zg5c
 Remove-AppxPackage Microsoft.People_10.1805.1361.0_x64__8wekyb3d8bbwe
+
 
 Get-AppxPackage | Where-Object { $_.PackageName -match "BingWeather" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
 Get-AppxPackage | Where-Object { $_.PackageName -match "Cortana" } | ForEach-Object { Remove-AppxPackage -Online -PackageName $_.PackageName }
