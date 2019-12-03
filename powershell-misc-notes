@@ -262,7 +262,7 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\InputPersonalization" /v AllowInputPer
 reg add "HKCU\Software\Microsoft\Input\TIPC" /v Enabled /t REG_DWORD /d 0 /f
 
 # Privacy - Activity history
-reg add "HKLM\OFTWARE\Policies\Microsoft\Windows\System" /v PublishUserActivities /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v PublishUserActivities /t REG_DWORD /d 0 /f
 
 # Privacy - Camera
 reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam" /v Value /t REG_SZ /d Deny
