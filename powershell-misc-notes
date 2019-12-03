@@ -5,23 +5,6 @@
 
 
 
-$hostnamenew = Read-Host -Prompt 'Enter  new hostname: '
-$net-ip-static = Read-Host -Prompt 'Enter IP address: '
-$net-ip-gateway = Read-Host -Prompt 'Enter default gateway: '
-
-
-# Change hostname
-# -----------------------------------------------------------
-Rename-Computer -NewName [new name] -LocalCredential env:computername\Administrator -PassThru
-
-
-# Set static IP on interface alias "Wired Ethernet Connection"
-# -----------------------------------------------------------
-New-NetIPAddress –InterfaceAlias "Wired Ethernet Connection" –IPv4Address $net-ip-static –PrefixLength 24 -DefaultGateway $net-ip-gateway
-Set-DnsClientServerAddress -InterfaceAlias "Wired Ethernet Connection" -ServerAddresses 172.31.0.51
-Set-DnsClientGlobalSetting -SuffixSearchList @("foobar.com")
-
-
 # Disable NetBIOS over TCP/IP
 # -----------------------------------------------------------
 $net-adapters=(gwmi Win32_NetworkAdapterConfiguration )
@@ -297,6 +280,26 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v PublishUserActiviti
 
 # Server-side stuff
 # ----------------------------------------------------------------------------------------------------------------------
+
+
+
+$hostnamenew = Read-Host -Prompt 'Enter  new hostname: '
+$net-ip-static = Read-Host -Prompt 'Enter IP address: '
+$net-ip-gateway = Read-Host -Prompt 'Enter default gateway: '
+
+
+# Change hostname
+# -----------------------------------------------------------
+Rename-Computer -NewName [new name] -LocalCredential env:computername\Administrator -PassThru
+
+
+# Set static IP on interface alias "Wired Ethernet Connection"
+# -----------------------------------------------------------
+New-NetIPAddress –InterfaceAlias "Wired Ethernet Connection" –IPv4Address $net-ip-static –PrefixLength 24 -DefaultGateway $net-ip-gateway
+Set-DnsClientServerAddress -InterfaceAlias "Wired Ethernet Connection" -ServerAddresses 172.31.0.51
+Set-DnsClientGlobalSetting -SuffixSearchList @("foobar.com")
+
+
 
 # Create Active Directory
 # -----------------------------------------------------------
