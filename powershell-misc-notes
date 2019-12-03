@@ -7,11 +7,7 @@
 
 # Disable NetBIOS over TCP/IP
 # -----------------------------------------------------------
-$net-adapters=(gwmi Win32_NetworkAdapterConfiguration )
-Foreach ($net-adapter in $net-adapters){
-  Write-Host $net-adapter
-  $net-adapter.SetTcpipNetbios(2)
-}
+set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\tcpip* -Name NetbiosOptions -Value 2
 
 
 # Adapter Bindings
