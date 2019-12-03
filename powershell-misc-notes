@@ -1,6 +1,4 @@
-# Tested on Windows 10 Professional 1809 build 17763.379
-#
-# Remove bloatware as much as possible, protect user privacy, minimize OS attack surface
+# Windows 10 Professional (1809 build 17763.379) - Remove bloatware, as much as possible, protect user privacy, minimize OS attack surface
 #
 # If using in a script, you may need to run:
 # Set-ExecutionPolicy -ExecutionPolicy Unrestricted
@@ -10,7 +8,6 @@
 # Disable NetBIOS over TCP/IP
 # -----------------------------------------------------------
 set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\services\NetBT\Parameters\Interfaces\tcpip* -Name NetbiosOptions -Value 2
-
 
 # Adapter Bindings
 # -----------------------------------------------------------
@@ -31,8 +28,6 @@ Disable-NetAdapterBinding -Name "*" -ComponentID ms_rspndr
 
 # Disable Microsoft LLDP Protocol Driver
 Disable-NetAdapterBinding -Name "*" -ComponentID ms_lldp
-
-
 
 # Disable Teredo
 # -----------------------------------------------------------
@@ -90,12 +85,6 @@ reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\current\device\ApplicationManagem
 reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f
 reg add "HKCU\Software\Microsoft\GameBar" /v AllowAutoGameMode /t REG_DWORD /d 0 /f
 reg add "HKCU\Software\Microsoft\GameBar" /v AutoGameModeEnabled /t REG_DWORD /d 0 /f
-
-
-
-# Remove Zune stuff
-# -----------------------------------------------------------
-Get-ProvisionedAppxPackage -Online | Where-Object { $_.PackageName -match "zune" } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -PackageName $_.PackageName }
 
 
 
