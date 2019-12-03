@@ -1,5 +1,7 @@
 # Tested on Windows 10 Professional 1809 build 17763.379
-
+#
+# Remove bloatware as much as possible, protect user privacy, minimize OS attack surface
+#
 # If using in a script, you may need to run:
 # Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
