@@ -309,3 +309,129 @@ Set-ItemProperty -Path â€˜HKLM:SYSTEM\CurrentControlSetControl\Terminal Serverâ€
 New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow RDP" -Direction inbound -Profile Any -Action Allow -Protocol TCP -LocalPort 3389
 New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow ping" -Direction inbound -Profile Any -Action Allow -Protocol ICMPv4 -IcmpType 8
 
+
+# Good stuff here:
+# https://github.com/MicrosoftDocs/windowsserverdocs/blob/master/WindowsServerDocs/security/windows-services/security-guidelines-for-disabling-system-services-in-windows-server.md
+
+# Disable Server Manager auto-launch in Task Scheduler
+Get-ScheduledTask -TaskName ServerManager | Disable-ScheduledTask -Verbose
+
+# Disable Xbox crap in Task Scheduler ... why does this even exist on a server?
+Get-ScheduledTask -TaskName XblGameSaveTask | Disable-ScheduledTask -Verbose
+Get-ScheduledTask -TaskName XblGameSaveTaskLogon | Disable-ScheduledTask -Verbose
+
+# Disable other crap in Task Scheduler
+Get-ScheduledTask -TaskName MapsToastTask | Disable-ScheduledTask -Verbose
+Get-ScheduledTask -TaskName "MNO Metadata Parser" | Disable-ScheduledTask -Verbose
+Get-ScheduledTask -TaskName UPnPHostConfig | Disable-ScheduledTask -Verbose
+
+
+
+
+# Disable ActiveX Installer (AxInstSV) service
+Stop-Service "AxInstSV" -Force
+Set-Service "AxInstSV" -StartupType Disabled
+
+# Disable AllJoyn Router Service service
+Stop-Service "AJRouter" -Force
+Set-Service "AJRouter" -StartupType Disabled
+
+# Disable Bluetooth Support Service service
+Stop-Service "bthserv" -Force
+Set-Service "bthserv" -StartupType Disabled
+
+# Disable Contact Data_* service
+Stop-Service "PimIndexMaintenanceSvc_*" -Force
+Set-Service "PimIndexMaintenanceSvc_*" -StartupType Disabled
+
+# Disable dmwappushsvc service
+Stop-Service "dmwappushservice" -Force
+Set-Service "dmwappushservice" -StartupType Disabled
+
+# Disable Downloaded Maps Manager service
+Stop-Service "MapsBroker" -Force
+Set-Service "MapsBroker" -StartupType Disabled
+
+# Disable Geolocation Service service
+Stop-Service "lfsvc" -Force
+Set-Service "lfsvc" -StartupType Disabled
+
+# Disable Internet Connection Sharing (ICS) service
+Stop-Service "SharedAccess" -Force
+Set-Service "SharedAccess" -StartupType Disabled
+
+# Disable IP Helper service
+Stop-Service "iphlpsvc" -Force
+Set-Service "iphlpsvc" -StartupType Disabled
+
+# Disable Link-Layer Topology Discovery Mapper service
+Stop-Service "lltdsvc" -Force
+Set-Service "lltdsvc" -StartupType Disabled
+
+# Disable NcbService service
+Stop-Service "Network Connection Broker" -Force
+Set-Service "Network Connection Broker" -StartupType Disabled
+
+# Disable Phone Service service
+Stop-Service "PhoneSvc" -Force
+Set-Service "PhoneSvc" -StartupType Disabled
+
+# Disable Quality Windows Audio Video Experience service
+Stop-Service "QWAVE" -Force
+Set-Service "QWAVE" -StartupType Disabled
+
+# Disable Radio Management service
+Stop-Service "RmSvc" -Force
+Set-Service "RmSvc" -StartupType Disabled
+
+# Disable Sensor Data service
+Stop-Service "SensorDataService" -Force
+Set-Service "SensorDataService" -StartupType Disabled
+
+# Disable Sensor Monitoring service
+Stop-Service "SensrSvc" -Force
+Set-Service "SensrSvc" -StartupType Disabled
+
+# Disable Sensor service
+Stop-Service "SensorService" -Force
+Set-Service "SensorService" -StartupType Disabled
+
+# Disable Still Image Acquisition Events service
+Stop-Service "WiaRpc" -Force
+Set-Service "WiaRpc" -StartupType Disabled
+
+# Disable Sync Host service
+Stop-Service "OneSyncSvc_*" -Force
+Set-Service "OneSyncSvc_*" -StartupType Disabled
+
+# Disable Touch Keyboard and Handwriting Panel service
+Stop-Service "TabletInputService" -Force
+Set-Service "TabletInputService" -StartupType Disabled
+
+# Disable WalletService service
+Stop-Service "WalletService" -Force
+Set-Service "WalletService" -StartupType Disabled
+
+# Disable Windows Camera Frame Server service
+Stop-Service "FrameServer" -Force
+Set-Service "FrameServer" -StartupType Disabled
+
+# Disable Windows Image Acquisition (WIA) service
+Stop-Service "stisvc" -Force
+Set-Service "stisvc" -StartupType Disabled
+
+# Disable Windows Insider service
+Stop-Service "wisvc" -Force
+Set-Service "wisvc" -StartupType Disabled
+
+# Disable Windows Mobile Hotspot service
+Stop-Service "icssvc" -Force
+Set-Service "icssvc" -StartupType Disabled
+
+# Disable Xbox Live Auth Manager service ... why does this even exist on a server?
+Stop-Service "XblAuthManager" -Force
+Set-Service "XblAuthManager" -StartupType Disabled
+
+# Disable Xbox Live Game Save service ... why does this even exist on a server?
+Stop-Service "XblGameSave" -Force
+Set-Service "XblGameSave" -StartupType Disabled
