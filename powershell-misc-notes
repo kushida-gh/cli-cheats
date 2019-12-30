@@ -435,3 +435,27 @@ Set-Service "XblAuthManager" -StartupType Disabled
 # Disable Xbox Live Game Save service ... why does this even exist on a server?
 Stop-Service "XblGameSave" -Force
 Set-Service "XblGameSave" -StartupType Disabled
+
+
+
+
+
+# Install IIS Feature for web services
+Install-WindowsFeature -name Web-Server -IncludeManagementTools
+
+
+# Create self-signed cert for now
+
+New-SelfSignedCertificate -DnsName myhostname.mycorpdomain.com -CertStoreLocation Cert:\LocalMachine\My
+
+
+# Verify cert is installed in local certificate store and get Thumbprint value
+
+Get-ChildItem Cert:\LocalMachine\My
+
+
+# Create SSL/TLS binding
+
+New-WebBinding -Name "Default Web Site" -IP "*" -Port 443 -Protocol https
+Set-Location IIS:\SslBindings\
+Get-Item Cert:\LocalMachine\My\[Thumbprint] | New-Item 0.0.0.0!443
