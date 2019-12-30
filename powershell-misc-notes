@@ -444,18 +444,14 @@ Set-Service "XblGameSave" -StartupType Disabled
 Install-WindowsFeature -name Web-Server -IncludeManagementTools
 
 
-# Create self-signed cert for now
+# Create self-signed certificate for now; note the thumbprint value of the created certificate
 
 New-SelfSignedCertificate -DnsName myhostname.mycorpdomain.com -CertStoreLocation Cert:\LocalMachine\My\ -NotAfter (Get-Date).AddMonths(27)
 
 
-# Verify cert is installed in local certificate store and get Thumbprint value
-
-Get-ChildItem Cert:\LocalMachine\My
-
 
 # Create SSL/TLS binding
 
-New-WebBinding -Name "Default Web Site" -IP "*" -Port 443 -Protocol https
+New-WebBinding -Name "Default Web Site" -IPAddress "*" -Port 443 -Protocol https
 Set-Location IIS:\SslBindings\
 Get-Item Cert:\LocalMachine\My\[Thumbprint] | New-Item 0.0.0.0!443
