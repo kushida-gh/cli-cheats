@@ -1,0 +1,15 @@
+
+
+
+
+# Disable RC4 support
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\RC4 128/128"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\RC4 128/128" /v Enabled /t REG_DWORD /d 0
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\RC4 40/128"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\RC4 40/128" /v Enabled /t REG_DWORD /d 0
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\RC4 56/128"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\RC4 56/128" /v Enabled /t REG_DWORD /d 0
+
+$ Disable 3DES support
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\Triple DES 168"
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\Triple DES 168" /v Enabled /t REG_DWORD /d 0
