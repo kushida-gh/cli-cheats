@@ -446,7 +446,7 @@ Install-WindowsFeature -name Web-Server -IncludeManagementTools
 
 # Create self-signed cert for now
 
-New-SelfSignedCertificate -DnsName myhostname.mycorpdomain.com -CertStoreLocation Cert:\LocalMachine\My
+New-SelfSignedCertificate -DnsName myhostname.mycorpdomain.com -CertStoreLocation Cert:\LocalMachine\My\ -NotAfter (Get-Date).AddMonths(27)
 
 
 # Verify cert is installed in local certificate store and get Thumbprint value
