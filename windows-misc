@@ -1,6 +1,5 @@
 
-
-
+# PowerShell is cooler to use, but it's trickier when forward slash characters are involved in the path
 
 # Disable RC4 support
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\|SecurityProviders\SCHANNEL\Ciphers\RC4 128/128"
