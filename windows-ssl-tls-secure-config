@@ -1,4 +1,4 @@
-# SSL/TLS basic secure configuration, tested on Windows Server 2016
+# SSL/TLS basic hardening, tested on Windows Server 2016
 #
 # PowerShell is cooler to use, but it's trickier when forward slash characters are involved in the path
 # Note: also look into https://www.nartac.com/Products/IISCrypto/
