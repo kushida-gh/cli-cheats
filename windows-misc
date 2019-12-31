@@ -1,6 +1,6 @@
 # Tested on Windows Server 2016
 
-# Tweak SSL/TLS ciphersuite support
+# SSL/TLS basic secure configuration
 # PowerShell is cooler to use, but it's trickier when forward slash characters are involved in the path
 
 # Disable RC4 support
