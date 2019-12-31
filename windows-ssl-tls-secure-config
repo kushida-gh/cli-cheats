@@ -1,6 +1,7 @@
 # SSL/TLS basic secure configuration, tested on Windows Server 2016
 #
 # PowerShell is cooler to use, but it's trickier when forward slash characters are involved in the path
+# Note: also look into https://www.nartac.com/Products/IISCrypto/
 
 # Disable RC4 support
 reg add "HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 128/128"
