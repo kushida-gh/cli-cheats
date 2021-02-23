@@ -289,6 +289,10 @@ Set-DnsClientGlobalSetting -SuffixSearchList @("foobar.com")
 
 # Create Active Directory
 # -----------------------------------------------------------
+
+Rename-Computer -NewName "win2016-dc01"
+Restart-Computer
+
 $dns-fqdn = Read-Host -Prompt 'Enter Active Directory DNS namespace (such as foobar.com): '
 $netbios-domain = Read-Host -Prompt 'Enter Active Directory NetBIOS name (such as FOOBAR): '
 
@@ -443,15 +447,15 @@ Set-Service "XblGameSave" -StartupType Disabled
 # Install IIS Feature for web services
 Install-WindowsFeature -name Web-Server -IncludeManagementTools
 
-
 # Create self-signed certificate for now; note the thumbprint value of the created certificate
-
 New-SelfSignedCertificate -DnsName myhostname.mycorpdomain.com -CertStoreLocation Cert:\LocalMachine\My\ -NotAfter (Get-Date).AddMonths(27)
 
-
-
 # Create SSL/TLS binding
-
 New-WebBinding -Name "Default Web Site" -IPAddress "*" -Port 443 -Protocol https
 Set-Location IIS:\SslBindings\
 Get-Item Cert:\LocalMachine\My\[Thumbprint] | New-Item 0.0.0.0!443
+
+# Search Windows event log for specific EventIDs
+
+# Search System log, most recent 1000 events, look for EventID 7036 or 7040 with the string "Remote Registry" in the Message
+Get-EventLog -LogName System -Newest 1000 | Where-Object {$_.EventID -eq 7036 -or 7040} | Where Message -Match "Remote Registry" | Select TimeGenerated, EventID, Message | Sort TimeGenerated | Format-Table -Wrap -AutoSize
