@@ -1,0 +1,5 @@
+# Nessus - authenticated scanning for non-domain Windows host
+# If scan results in Plugin ID 21745 (https://www.tenable.com/plugins/nessus/21745), check for:
+
+New-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -name 'LocalAccountTokenFilterPolicy' -value 1 –PropertyType DWORD
+
