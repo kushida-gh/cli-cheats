@@ -1,0 +1,87 @@
+# Check NTP client configuration (requires elevation)
+
+w32tm /query /configuration
+
+[Configuration]
+
+EventLogFlags: 2 (Local)
+AnnounceFlags: 10 (Local)
+TimeJumpAuditOffset: 28800 (Local)
+MinPollInterval: 10 (Local)
+MaxPollInterval: 15 (Local)
+MaxNegPhaseCorrection: 54000 (Local)
+MaxPosPhaseCorrection: 54000 (Local)
+MaxAllowedPhaseOffset: 1 (Local)
+
+FrequencyCorrectRate: 4 (Local)
+PollAdjustFactor: 5 (Local)
+LargePhaseOffset: 50000000 (Local)
+SpikeWatchPeriod: 900 (Local)
+LocalClockDispersion: 10 (Local)
+HoldPeriod: 5 (Local)
+PhaseCorrectRate: 1 (Local)
+UpdateInterval: 360000 (Local)
+
+
+[TimeProviders]
+
+NtpClient (Local)
+DllName: C:\WINDOWS\system32\w32time.dll (Local)
+Enabled: 1 (Local)
+InputProvider: 1 (Local)
+AllowNonstandardModeCombinations: 1 (Local)
+ResolvePeerBackoffMinutes: 15 (Local)
+ResolvePeerBackoffMaxTimes: 7 (Local)
+CompatibilityFlags: 2147483648 (Local)
+EventLogFlags: 1 (Local)
+LargeSampleSkew: 3 (Local)
+SpecialPollInterval: 32768 (Local)
+Type: NTP (Local)
+NtpServer: time.windows.com,0x9 (Local)
+
+VMICTimeProvider (Local)
+DllName: C:\WINDOWS\System32\vmictimeprovider.dll (Local)
+Enabled: 1 (Local)
+InputProvider: 1 (Local)
+
+NtpServer (Local)
+DllName: C:\WINDOWS\system32\w32time.dll (Local)
+Enabled: 0 (Local)
+InputProvider: 0 (Local)
+
+
+
+# Check NTP client sync status
+
+w32tm /query /status
+
+Leap Indicator: 3(not synchronized)
+Stratum: 0 (unspecified)
+Precision: -23 (119.209ns per tick)
+Root Delay: 0.0000000s
+Root Dispersion: 0.0000000s
+ReferenceId: 0x00000000 (unspecified)
+Last Successful Sync Time: unspecified
+Source: Free-running System Clock
+Poll Interval: 10 (1024s)
+
+
+
+# Point to non-default NTP service:
+
+w32tm /config /syncfromflags:manual /manualpeerlist:ntp.mydomain.com
+w32tm /config /update
+w32tm /resync
+
+
+
+# Restart NTP client via PowerShell
+
+ Restart-Service W32Time
+ 
+ 
+
+# Restart NTP client the old school way
+
+net stop w32time && net start w32time
+
