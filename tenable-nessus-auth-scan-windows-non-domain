@@ -3,3 +3,4 @@
 
 New-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -name 'LocalAccountTokenFilterPolicy' -value 1 –PropertyType DWORD
 
+# Ref: https://docs.microsoft.com/en-us/archive/blogs/vistacompatteam/uac-and-remote-logon
