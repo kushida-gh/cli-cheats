@@ -1,0 +1,56 @@
+# Tested on Ubuntu 20.04.3 destkop
+
+sudo apt-get install -y squid
+
+sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.original
+sudo rm -f /etc/squid/squid.conf
+
+
+# Squid config below to allow localhost to browse network to only select domains via whitelist
+# ------------------------------------------------------------------------------------------------------------------------------
+
+sudo vi /etc/squid/squid.conf
+
+# ------------------------------------------------------------------------------------------------------------------------------
+
+acl SSL_ports port 443
+acl CONNECT method CONNECT
+acl whitelist dstdomain "/etc/squid/whitelist"
+acl SSL_ports port 443
+acl Safe_ports port 443
+acl Safe_ports port 80
+
+http_access deny CONNECT !SSL_ports
+http_access deny !Safe_ports
+http_access allow localhost whitelist
+http_access deny all
+
+http_port 8080
+
+coredump_dir /var/spool/squid
+
+refresh_pattern ^ftp:           1440    20%     10080
+refresh_pattern ^gopher:        1440    0%      1440
+refresh_pattern -i (/cgi-bin/|\?) 0     0%      0
+refresh_pattern .               0       20%     4320
+
+cache deny all
+
+# ------------------------------------------------------------------------------------------------------------------------------
+
+
+# Add whitelist domains
+# ------------------------------------------------------------------------------------------------------------------------------
+
+sudo vi /etc/squid/whitelist
+
+www.google.com
+.gstatic.com
+fonts.googleapis.com
+
+ocsp.pki.goog
+ocsp.digicert.com
+
+# ------------------------------------------------------------------------------------------------------------------------------
+
+# configure browser to use proxy at 127.0.0.1, port 8080
