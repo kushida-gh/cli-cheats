@@ -264,6 +264,17 @@ reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v PublishUserActiviti
 
 
 
+
+
+
+# Get the process name bound to a network connection over a specific port like 443
+Get-Process -Id (Get-NetTCPConnection -LocalPort 443).OwningProcess
+
+# If the above doesn't work, try the netsh variation:
+netsh http show servicestate
+
+
+
 # Server-side stuff
 # ----------------------------------------------------------------------------------------------------------------------
 
