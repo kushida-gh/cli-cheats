@@ -37,3 +37,11 @@ request system software install version 8.1.0
 request restart system
 
 show ntp
+
+configure
+# set mgt-config password-profile pw-profile-01 password-change expiration-period 90 expiration-warning-period 10 post-expiration-admin-login-count 0 post-expiration-grace-period 0
+# set mgt-config users ro-admin password-profile pw-profile-01 permissions role-based superreader yes 
+# set mgt-config users ro-admin password
+# [ double prompt for password ]
+# commit
+# exit
