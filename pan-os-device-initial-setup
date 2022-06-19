@@ -1,0 +1,39 @@
+show system info
+show interface management
+show system disk-space
+show system files
+
+set clock date 2022/01/31 time 01:15:00
+
+delete debug-log mp-log file *.1
+delete debug-log mp-log file *.2
+delete debug-log mp-log file *.3
+delete debug-log mp-log file *.4
+delete debug-log mp-log file *.old
+
+# Generate this first for use later in the SSL/TLS Certificate profile to be used by the management interface
+request certificate generate ca yes name firewall-01.foo.corp.com certificate-name cert-firewall-01.foo.corp.com-2022-01-31 algorithm RSA rsa-nbits 4096
+
+configure
+# set deviceconfig system hostname firewall-01
+# set deviceconfig system domain foo.corp.com
+# set deviceconfig system ip-address 10.1.1.31 netmask 255.255.255.0
+# set deviceconfig system default-gateway 10.1.1.1
+# set deviceconfig system dns-setting servers primary 8.8.8.8 secondary 1.1.1.1
+# set deviceconfig system ntp-servers primary-ntp-server ntp-server-address time.nist.gov
+# set shared ssl-tls-service-profile tls1.2-only certificate cert-firewall-01.foo.corp.com-2022-01-31 protocol-settings min-version tls1-2 max-version tls1-2 enc-algo-aes-128-gcm yes enc-algo-aes-256-gcm yes auth-algo-sha384 yes keyxchg-algo-ecdhe yes
+# set deviceconfig system ssl-tls-service-profile tls1.2-only
+# set deviceconfig system login-banner "UNAUTHORIZED ACCESS TO THIS DEVICE IS PROHIBITED You must have explicit, authorized permission to access or configure this device. Unauthorized attempts and actions to access or use this system may result in civil and/or criminal penalties. All activities performed on this device are logged and monitored."
+# commit
+# exit
+
+ping host 10.1.1.77
+show arp management
+show arp all
+
+
+scp import software from myusername@10.1.1.21:PanOS_200-8.1.0
+request system software install version 8.1.0
+request restart system
+
+show ntp
