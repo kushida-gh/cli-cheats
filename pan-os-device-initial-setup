@@ -48,10 +48,10 @@ configure
 # set deviceconfig system ssh mac mgmt hmac-sha2-512
 # set shared log-settings syslog syslog-corp-set-01 server mysyslog-host-01 server 10.2.2.21 transport UDP port 514
 # set shared log-settings syslog syslog-corp-set-01 server mysyslog-host-02 server 10.2.2.22 transport UDP port 514
-# set shared log-settings system match-list logging-system send-syslog syslog-corp-set-01
-# set shared log-settings config match-list logging-system send-syslog syslog-corp-set-01
-# set shared log-settings hipmatch match-list logging-system send-syslog syslog-corp-set-01
-# set shared log-settings userid match-list logging-system send-syslog syslog-corp-set-01
+# set shared log-settings system match-list logging-system send-syslog syslog-corp-set-01 filter "All Logs"
+# set shared log-settings config match-list logging-system send-syslog syslog-corp-set-01 filter "All Logs"
+# set shared log-settings hipmatch match-list logging-system send-syslog syslog-corp-set-01 filter "All Logs"
+# set shared log-settings userid match-list logging-system send-syslog syslog-corp-set-01 filter "All Logs"
 
 # commit
 # exit
