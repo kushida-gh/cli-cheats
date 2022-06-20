@@ -66,8 +66,8 @@ configure
  set shared log-settings config match-list logging-system send-syslog syslog-corp-set-01 filter "All Logs"
  set shared log-settings hipmatch match-list logging-system send-syslog syslog-corp-set-01 filter "All Logs"
  set shared log-settings userid match-list logging-system send-syslog syslog-corp-set-01 filter "All Logs"
- set shared server-profile tacplus tacacs-corp-set-01 protocol CHAP server mytacacshost-01 address 10.2.2.41 port 49 secret "TAC+S3Cret!"
- set shared server-profile tacplus tacacs-corp-set-01 protocol CHAP server mytacacshost-02 address 10.2.2.42 port 49 secret "TAC+S3Cret!"
+ set shared server-profile tacplus tacacs-corp-set-01 protocol PAP server mytacacshost-01 address 10.2.2.41 port 49 secret "TAC+S3Cret!"
+ set shared server-profile tacplus tacacs-corp-set-01 protocol PAP server mytacacshost-02 address 10.2.2.42 port 49 secret "TAC+S3Cret!"
  set shared authentication-profile auth-profile-01 method tacplus server-profile tacacs-corp-set-01
  set shared authentication-profile auth-profile-01 allow-list all lockout failed-attempts 5 lockout-time 3
  set mgt-config users admin-johnny authentication-profile auth-profile-01 permissions role-based superuser yes
