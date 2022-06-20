@@ -1,19 +1,27 @@
+----- Get basic system info
 show system info
 show interface management
 show system disk-space
 show system files
 
+
+----- Set system time so logs, etc. are timestamped correctly
 set clock date 2022/01/31 time 01:15:00
 
+
+----- Delete old log data, etc. which may be soaking up disk space
 delete debug-log mp-log file *.1
 delete debug-log mp-log file *.2
 delete debug-log mp-log file *.3
 delete debug-log mp-log file *.4
 delete debug-log mp-log file *.old
 
-# Generate this first for use later in the SSL/TLS Certificate profile to be used by the management interface
+
+-----  Generate this self-signed cert first for use later in the SSL/TLS Certificate profile to be used by the management interface; it's preferred to eventually get a proper cert signed by a trusted authority
 request certificate generate ca yes name firewall-01.foo.corp.com certificate-name cert-firewall-01.foo.corp.com-2022-01-31 algorithm RSA rsa-nbits 4096
 
+
+----- Initial configuraiton of management interface
 configure
 # set deviceconfig system hostname firewall-01
 # set deviceconfig system domain foo.corp.com
@@ -27,17 +35,23 @@ configure
 # commit
 # exit
 
+----- Test connectivity from management interface
 ping host 10.1.1.77
 show arp management
 show arp all
 
 
+----- Secure copy Pan-OS image files, dynamic updates, etc. Example here is specific to OS software install
 scp import software from myusername@10.1.1.21:PanOS_200-8.1.0
 request system software install version 8.1.0
 request restart system
 
+
+----- Verify NTP sync status and peer(s)
 show ntp
 
+
+----- Set up local password profile, ready-only admin account, then harden SSH, configure basic syslog settings, TACACS+ profile, and initial non-factory admin account
 configure
 # set mgt-config password-profile pw-profile-01 password-change expiration-period 90 expiration-warning-period 10 post-expiration-admin-login-count 0 post-expiration-grace-period 0
 # set mgt-config users ro-admin password-profile pw-profile-01 permissions role-based superreader yes 
@@ -60,4 +74,6 @@ configure
 # commit
 # exit
 
+
+----- Restart SSH daemon after the hardening configuration is done above
 set ssh service-restart mgmt
