@@ -3,4 +3,12 @@
 
 New-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -name 'LocalAccountTokenFilterPolicy' -value 1 –PropertyType DWORD
 
+
 # Ref: https://docs.microsoft.com/en-us/archive/blogs/vistacompatteam/uac-and-remote-logon
+# 
+# Note: this will deviate from the recommended CIS Benchmark control:
+# Ensure 'Apply UAC restrictions to local accounts on network logons' is set to 'Enabled'
+#
+# Review: https://www.microsoft.com/en-us/download/details.aspx?id=36036
+#
+# Optional workaround is to instead use an agent-based solution such as Tenable Nessus Agent or Qualys Cloud Agent
