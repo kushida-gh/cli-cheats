@@ -1,0 +1,5 @@
+# observe ps output constantly looking for split-second process lifetimes
+# where using the watch command with the minimum interval as 1 second isn't sufficient
+
+while true; do netstat -an | grep somethingsomething >> netstat-output ; sleep 0.1; done
+while true; do ps aux | grep somethingsomething >> ps-output ; sleep 0.1; done
