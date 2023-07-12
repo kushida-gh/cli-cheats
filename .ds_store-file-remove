@@ -1,0 +1,4 @@
+# Delete .DS_Store (Desktop Services Store) files on Windows
+
+attrib -h .DS_Store /s
+Get-ChildItem -Recurse -Filter .DS_Store | Remove-Item
