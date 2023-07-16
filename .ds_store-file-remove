@@ -2,8 +2,18 @@
 attrib -h .DS_Store /s
 Get-ChildItem -Recurse -Filter .DS_Store | Remove-Item
 
+
 # Consider deleting other related hidden files with names starting with "._"
 #
 # Note: be careful with this one!
 attrib -h ._ /s
 Get-ChildItem -Recurse -Filter ._* | Remove-Item
+
+
+# Delete .Spotlight-V100 files
+cd .Spotlight-V100
+attrib -h -r *.* /s
+cd ..
+attrib -h .Spotlight-V100
+attrib -r .Spotlight-V100
+Get-ChildItem -Recurse -Filter .Spotlight-V100 | Remove-Item Recurse -Force
