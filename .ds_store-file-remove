@@ -16,4 +16,10 @@ attrib -h -r *.* /s
 cd ..
 attrib -h .Spotlight-V100
 attrib -r .Spotlight-V100
-Get-ChildItem -Recurse -Filter .Spotlight-V100 | Remove-Item Recurse -Force
+Get-ChildItem -Recurse -Filter .Spotlight-V100 | Remove-Item -Recurse -Force
+
+
+# Delete .fseventsd files
+attrib -h .fseventsd
+attrib -r .fseventsd
+Get-ChildItem -Recurse -Filter .fseventsd | Remove-Item -Recurse -Force
