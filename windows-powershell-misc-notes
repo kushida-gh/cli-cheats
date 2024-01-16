@@ -321,8 +321,8 @@ Write-Host "Reboot the server when ready to initialize your new Active Directory
 # -----------------------------------------------------------
 Set-ItemProperty -Path ‘HKLM:SYSTEM\CurrentControlSetControl\Terminal Server’ -Name fDenyTSConnections -Value 0
 
-New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow RDP" -Direction inbound -Profile Any -Action Allow -Protocol TCP -LocalPort 3389
-New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow ping" -Direction inbound -Profile Any -Action Allow -Protocol ICMPv4 -IcmpType 8
+New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow RDP" -Direction Inbound -Profile Any -Action Allow -Protocol TCP -LocalPort 3389
+New-NetFirewallRule -RemoteAddress 172.16.0.0/12 -DisplayName "FOOBAR: Allow ping" -Direction Inbound -Profile Any -Action Allow -Protocol ICMPv4 -IcmpType 8
 
 
 # Good stuff here:
@@ -470,3 +470,11 @@ Get-Item Cert:\LocalMachine\My\[Thumbprint] | New-Item 0.0.0.0!443
 
 # Search System log, most recent 1000 events, look for EventID 7036 or 7040 with the string "Remote Registry" in the Message
 Get-EventLog -LogName System -Newest 1000 | Where-Object {$_.EventID -eq 7036 -or 7040} | Where Message -Match "Remote Registry" | Select TimeGenerated, EventID, Message | Sort TimeGenerated | Format-Table -Wrap -AutoSize
+
+
+
+
+# More Windows Defender Firewall stuff
+New-NetFirewallRule -DisplayName "Custom: Allow ping egress" -Program "System" -Direction Outbound -Profile Any -Protocol ICMPv4 -IcmpType 8 -Action Allow
+New-NetFirewallRule -DisplayName "Custom: Allow NTP egress" -Program "C:\Windows\system32\svchost.exe" -Direction Outbound -Profile Any -Protocol UDP -Action Allow
+New-NetFirewallRule -DisplayName "Custom: Allow nslookup egress" -Program "C:\Windows\system32\nslookup.exe" -Direction Outbound -Profile Any -Action Allow
