@@ -475,6 +475,6 @@ Get-EventLog -LogName System -Newest 1000 | Where-Object {$_.EventID -eq 7036 -o
 
 
 # More Windows Defender Firewall stuff
-New-NetFirewallRule -DisplayName "Custom: Allow ping and nslookup egress" -Program "System" -Direction Outbound -Profile Any -Protocol ICMPv4 -IcmpType 8 -Action Allow
+New-NetFirewallRule -DisplayName "Custom: Allow ping and TRACERT egress" -Program "System" -Direction Outbound -Profile Any -Protocol ICMPv4 -IcmpType 8 -Action Allow
 New-NetFirewallRule -DisplayName "Custom: Allow NTP egress" -Program "C:\Windows\system32\svchost.exe" -Direction Outbound -Profile Any -Protocol UDP -Action Allow
 New-NetFirewallRule -DisplayName "Custom: Allow nslookup egress" -Program "C:\Windows\system32\nslookup.exe" -Direction Outbound -Profile Any -Protocol UDP -RemotePort 53 -Action Allow
