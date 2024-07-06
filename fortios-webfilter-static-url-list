@@ -1,0 +1,38 @@
+# Create static URL list to allow/monitor/block
+config webfilter urlfilter
+    edit 10
+        set name "test-foo"
+        config entries
+            edit 1
+                set url "*.example-domain-1.com"
+                set type wildcard
+                set action monitor
+            next
+            edit 2
+                set url "www.example-domain-2.com"
+                set type simple
+                set action monitor
+            next
+            edit 3
+                set url "host[0-9].example-domain-3.com"
+                set type regex
+                set action monitor
+            next
+            edit 4
+                set url "*"
+                set type wildcard
+                set action block
+            next
+        end
+    end
+
+# Attach static URL list to Web Filter profile
+config webfilter profile
+    edit "test-foo"
+        config web
+            set urlfilter-table 10
+        end
+        config ftgd-wf 
+            set options ftgd-disable
+        end
+    end
