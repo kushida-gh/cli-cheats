@@ -6,7 +6,7 @@ Get-ChildItem -Recurse -Filter .DS_Store | Remove-Item
 # Consider deleting other related hidden files with names starting with "._"
 #
 # Note: be careful with this one!
-attrib -h ._ /s
+attrib -h ._* /s
 Get-ChildItem -Recurse -Filter ._* | Remove-Item
 
 
@@ -14,12 +14,15 @@ Get-ChildItem -Recurse -Filter ._* | Remove-Item
 cd .Spotlight-V100
 attrib -h -r *.* /s
 cd ..
-attrib -h .Spotlight-V100
-attrib -r .Spotlight-V100
+attrib -h -r .Spotlight-V100
 Get-ChildItem -Recurse -Filter .Spotlight-V100 | Remove-Item -Recurse -Force
 
 
 # Delete .fseventsd files
-attrib -h .fseventsd
-attrib -r .fseventsd
+attrib -h -r .fseventsd
 Get-ChildItem -Recurse -Filter .fseventsd | Remove-Item -Recurse -Force
+
+
+# Delete .Trashes files
+attrib -h -r .fseventsd
+Get-ChildItem -Recurse -Filter .Trashes | Remove-Item -Recurse -Force
